@@ -1,0 +1,12 @@
+# Rename me to config.py
+# use your configures
+
+import logging
+
+logger = logging.getLogger('gunicorn.error')
+
+
+class Config:
+    GITHUB = {
+        'token': 'your_token'
+    }
