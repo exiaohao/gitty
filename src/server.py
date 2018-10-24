@@ -15,8 +15,7 @@ from action import (
 
 logger = logging.getLogger('gunicorn.error')
 
-@hug.get('/test')
-@hug.default_input_format()
+@hug.get('/')
 def hello():
     return {
         "message": "Hi! I'm gitty, a github robot.",
