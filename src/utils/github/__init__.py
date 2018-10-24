@@ -1,4 +1,5 @@
 import json
+import requests
 
 
 class NotCommentException(Exception):
@@ -9,6 +10,49 @@ class NotIssueException(Exception):
 
 class NotRepositoryException(Exception):
     pass
+
+class MethodNotAllowed(Exception):
+    pass
+
+
+def github_api(config, url):
+    q = requests.post(url, data=config)
+    return q.json()
+
+class GithubAPIMethod:
+    ISSUE_CLOSE = 'closed'
+    ISSUE_OPEN = 'open'
+
+    ISSUE_METHODS = [
+        ISSUE_CLOSE,
+        ISSUE_OPEN,
+    ]
+
+class HTTPRequest:
+    GET = 'get'
+    POST = 'post'
+    PATCH = 'patch'
+
+class GithubAPI:
+    def __init__(self, github_config):
+        self.github_config = github_config
+    
+    def _request(self, url, method, **data):
+        if method == HTTPRequest.PATCH:
+            q = requests.patch(
+                url=url,
+                json=data,
+                headers={
+                    "Authorization": "token {}".format(self.github_config['token']),
+                })
+            return q.json()
+
+    def issue(self, url, method, **kwargs):
+        if method not in GithubAPIMethod.ISSUE_METHODS:
+            raise MethodNotAllowed
+        # TODO: check is issue resource
+        return self._request(url, HTTPRequest.PATCH, **{"state": method})
+
 
 class GithubRequest:
     def __init__(self, payload_raw):
